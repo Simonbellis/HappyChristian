@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Christian Friends Network</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#6a1b9a" />
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #333;
+      --primary: #6a1b9a;
+      --box: #ffffff;
+      --gold: #ffd700;
+    }
+    body.dark {
+      --bg: #1f2937;
+      --text: #f3f4f6;
+      --box: #374151;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      transition: 0.3s;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: var(--box);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+    }
+    h1, h2 {
+      text-align: center;
+      color: var(--primary);
+    }
+    .button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background-color: var(--gold);
+      color: #3e3e3e;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .post, .chat-message {
+      background: #e2e8f0;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .hidden {
+      display: none;
+    }
+    .profile-pic {
+      display: block;
+      margin: 10px auto;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary);
+    }
+    .verse, .devotional, .prayer {
+      font-style: italic;
+      margin: 10px 0;
+      background: #edf2f7;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .logout, .dark-toggle {
+      float: right;
+      margin-left: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .reply {
+      margin-left: 20px;
+      font-size: 0.9em;
+      background: #f1f5f9;
+      padding: 5px;
+      border-radius: 5px;
+      margin-top: 5px;
+    }
+    .like-btn {
+      background-color: #fca5a5;
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 5px 10px;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+      font-size: 0.9em;
+      transition: background-color 0.3s;
+    }
+    .liked {
+      background-color: #be185d;
+    }
+    .like-count {
+      font-size: 0.85em;
+      margin: 5px 0;
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="homePage">
+    <h1>Christian Friends Network</h1>
+    <p>"As iron sharpens iron, so one person sharpens another." - Proverbs 27:17</p>
+    <button class="button" onclick="showPage('loginPage')">Login</button>
+    <button class="button" onclick="showPage('signupPage')">Sign Up</button>
+  </div>
+
+  <div class="container hidden" id="signupPage">
+    <h2>Sign Up</h2>
+    <input type="text" id="signupUsername" placeholder="Username">
+    <input type="password" id="signupPassword" placeholder="Password">
+    <input type="file" id="signupImage" accept="image/*">
+    <button class="button" onclick="signupUser()">Create Account</button>
+    <button class="button" onclick="showPage('homePage')">Back</button>
+  </div>
+
+  <div class="container hidden" id="loginPage">
+    <h2>Login</h2>
+    <input type="text" id="loginUsername" placeholder="Username">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <div style="text-align:right;font-size:0.9em;margin-top:5px;">
+      <a style="color:var(--primary);cursor:pointer;" onclick="forgotPassword()">Forgot Password?</a>
+    </div>
+    <button class="button" onclick="loginUser()">Login</button>
+    <button class="button" onclick="showPage('homePage')">Back</button>
+  </div>
+
+  <div class="container hidden" id="feedPage">
+    <div class="flex">
+      <h2>Feed</h2>
+      <span class="dark-toggle" onclick="toggleDark()">🌓</span>
+      <span class="logout" onclick="logout()">Logout</span>
+    </div>
+    <img id="userImage" class="profile-pic" src="" alt="Profile">
+    <div class="verse" id="dailyVerse">Loading verse of the day...</div>
+    <div class="devotional">"Be still, and know that I am God." — Psalm 46:10.<br><strong>Devotional:</strong> In the midst of chaos, God reminds us to pause and trust in His sovereignty.</div>
+    <div class="prayer">🙏 <strong>Prayer:</strong> Lord, thank You for this day. Help me to reflect Your love in all that I do. Amen.</div>
+    <textarea id="postContent" placeholder="Share a prayer, verse, or encouragement..."></textarea>
+    <input type="file" id="postImage" accept="image/*">
+    <button class="button" onclick="submitPost()">Post</button>
+    <h3>Feed:</h3>
+    <div id="posts"></div>
+    <h3>Chat Wall:</h3>
+    <textarea id="chatContent" placeholder="Write a message..."></textarea>
+    <button class="button" onclick="submitChat()">Send</button>
+    <div id="chatBox"></div>
+    <h3>Chatrooms:</h3>
+    <select id="roomSelector" onchange="switchRoom()"></select>
+    <input type="text" id="newRoomName" placeholder="New room name">
+    <button class="button" onclick="createRoom()">Create Room</button>
+    <textarea id="roomMessage" placeholder="Type message..."></textarea>
+    <button class="button" onclick="sendRoomMessage()">Send</button>
+    <div id="roomChatBox"></div>
+  </div>
+
+  <script>
+// trimmed for brevity. Will include full JS in file below
+  </script>
+</body>
+</html>
